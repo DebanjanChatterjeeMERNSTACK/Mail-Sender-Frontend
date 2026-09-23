@@ -479,7 +479,7 @@ const MailTemplete = () => {
                 &times;
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-3 p-4 sm:p-5">
+            <form onSubmit={handleSubmit} className="space-y-3 p-3 sm:p-3">
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Mail Subject
@@ -525,7 +525,7 @@ const MailTemplete = () => {
                   </p>
                 )}
               </div>
-              <div className="flex flex-col-reverse gap-3 pt-3 sm:flex-row sm:justify-end">
+              <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
                 <button
                   type="button"
                   onClick={closeModal}
