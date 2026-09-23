@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AUTH } from "../config/api";
+import { toast } from "react-toastify";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -13,7 +14,6 @@ const ResetPassword = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -25,15 +25,9 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage("");
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage("Passwords do not match");
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setMessage("Password must be at least 6 characters");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -55,12 +49,12 @@ const ResetPassword = () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setMessage(data.message || "Password reset failed");
+      if (!data.success) {
+        toast.error(data.message || "Password reset failed");
         return;
       }
 
-      setMessage(data.message || "Password reset successfully");
+      toast.success(data.message || "Password reset successfully");
 
       setFormData({
         password: "",
@@ -70,10 +64,10 @@ const ResetPassword = () => {
       // Redirect to login after successful reset
       setTimeout(() => {
         navigate("/login");
-      }, 1500);
+      }, 1000);
     } catch (error) {
       console.log(error);
-      setMessage("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -94,12 +88,6 @@ const ResetPassword = () => {
           </p>
         </div>
 
-        {/* Message */}
-        {message && (
-          <div className="mb-5 p-3 rounded-lg bg-gray-100 text-center text-sm text-gray-700">
-            {message}
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -148,7 +136,7 @@ const ResetPassword = () => {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700
             disabled:bg-blue-400 text-white font-semibold
-            py-3 rounded-lg transition"
+            py-3 rounded-lg transition cursor-pointer"
           >
             {loading ? "Resetting..." : "Reset Password"}
           </button>
@@ -159,7 +147,7 @@ const ResetPassword = () => {
         <div className="text-center mt-6">
           <button
             onClick={() => navigate("/login")}
-            className="text-blue-600 font-semibold hover:underline"
+            className="text-blue-600 font-semibold hover:underline cursor-pointer"
           >
             ← Back to Login
           </button>

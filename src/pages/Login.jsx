@@ -1,16 +1,17 @@
 
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { AUTH } from "../config/api";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const navigate=useNavigate()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -21,8 +22,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setMessage("");
 
     try {
       setLoading(true);
@@ -40,8 +39,8 @@ const Login = () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setMessage(data.message || "Login failed");
+      if (!data.success) {
+        toast.error(data.message || "Login failed");
         return;
       }
 
@@ -50,16 +49,20 @@ const Login = () => {
         localStorage.setItem("token", data.token);
       }
 
-      setMessage(data.message || "Login successful");
+      toast.success(data.message || "Login successful");
 
       console.log("Login response:", data);
+      
+      setFormData({
+        email:"",
+        password:""
+      })
 
-      // Example redirect
-      // window.location.href = "/dashboard";
+      navigate("/home")
 
     } catch (error) {
       console.log(error);
-      setMessage("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -80,13 +83,6 @@ const Login = () => {
             Login to your account
           </p>
         </div>
-
-        {/* Message */}
-        {message && (
-          <div className="mb-5 p-3 rounded-lg bg-gray-100 text-center text-sm text-gray-700">
-            {message}
-          </div>
-        )}
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-5">

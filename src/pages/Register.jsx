@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { AUTH } from "../config/api";
+import { toast } from "react-toastify";
 const Register = () => {
+  const navigate=useNavigate()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -10,7 +12,6 @@ const Register = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -20,9 +21,7 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setMessage("");
+    e.preventDefault()
 
     try {
       setLoading(true);
@@ -45,12 +44,12 @@ const Register = () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setMessage(data.message || "Registration failed");
+      if (!data.success) {
+        toast.error(data.message || "Registration failed");
         return;
       }
 
-      setMessage(data.message || "Registration successful");
+      toast.success(data.message || "Registration successful");
 
       setFormData({
         name: "",
@@ -58,9 +57,10 @@ const Register = () => {
         password: "",
         appPassword: "",
       });
+      navigate("/login")
     } catch (error) {
       console.log(error);
-      setMessage("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -81,12 +81,7 @@ const Register = () => {
           </p>
         </div>
 
-        {/* Message */}
-        {message && (
-          <div className="mb-4 p-3 rounded-lg bg-gray-100 text-center text-sm">
-            {message}
-          </div>
-        )}
+     
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -153,7 +148,7 @@ const Register = () => {
               name="appPassword"
               value={formData.appPassword}
               onChange={handleChange}
-              placeholder="App password"
+              placeholder="Enter App password"
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
@@ -163,7 +158,7 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 rounded-lg transition"
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 rounded-lg transition cursor-pointer"
           >
             {loading ? "Registering..." : "Register"}
           </button>

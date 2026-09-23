@@ -2,16 +2,14 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AUTH } from "../config/api";
+import { toast } from "react-toastify";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setMessage("");
 
     try {
       setLoading(true);
@@ -31,19 +29,19 @@ const ForgotPassword = () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setMessage(data.message || "Something went wrong");
+      if (!data.success) {
+        toast.error(data.message || "Something went wrong");
         return;
       }
 
-      setMessage(
+      toast.success(
         data.message || "Password reset link has been sent to your email"
       );
 
       setEmail("");
     } catch (error) {
       console.log(error);
-      setMessage("Server error. Please try again.");
+      toast.error("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -63,13 +61,6 @@ const ForgotPassword = () => {
             Enter your email and we'll send you a password reset link.
           </p>
         </div>
-
-        {/* Message */}
-        {message && (
-          <div className="mb-5 p-3 rounded-lg bg-gray-100 text-center text-sm text-gray-700">
-            {message}
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -98,7 +89,7 @@ const ForgotPassword = () => {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700
             disabled:bg-blue-400 text-white font-semibold
-            py-3 rounded-lg transition"
+            py-3 rounded-lg transition cursor-pointer"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
