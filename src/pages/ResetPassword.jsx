@@ -1,30 +1,54 @@
 
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AUTH } from "../config/api";
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+const ResetPassword = () => {
+  const { token } = useParams();
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     setMessage("");
 
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setMessage("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const response = await fetch(
-        AUTH.ForgetPassword,
+        `${AUTH.ResetPassword}/${token}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email,
+            password: formData.password,
           }),
         }
       );
@@ -32,15 +56,21 @@ const ForgotPassword = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setMessage(data.message || "Something went wrong");
+        setMessage(data.message || "Password reset failed");
         return;
       }
 
-      setMessage(
-        data.message || "Password reset link has been sent to your email"
-      );
+      setMessage(data.message || "Password reset successfully");
 
-      setEmail("");
+      setFormData({
+        password: "",
+        confirmPassword: "",
+      });
+
+      // Redirect to login after successful reset
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     } catch (error) {
       console.log(error);
       setMessage("Server error. Please try again.");
@@ -56,11 +86,11 @@ const ForgotPassword = () => {
         {/* Heading */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">
-            Forgot Password?
+            Reset Password
           </h1>
 
           <p className="text-gray-500 mt-2">
-            Enter your email and we'll send you a password reset link.
+            Enter your new password below.
           </p>
         </div>
 
@@ -74,17 +104,18 @@ const ForgotPassword = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
 
-          {/* Email */}
+          {/* New Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              New Password
             </label>
 
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your registered email"
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter new password"
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg
               outline-none focus:ring-2 focus:ring-blue-500
@@ -92,7 +123,26 @@ const ForgotPassword = () => {
             />
           </div>
 
-          {/* Submit */}
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
+
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm new password"
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg
+              outline-none focus:ring-2 focus:ring-blue-500
+              focus:border-blue-500"
+            />
+          </div>
+
+          {/* Button */}
           <button
             type="submit"
             disabled={loading}
@@ -100,18 +150,19 @@ const ForgotPassword = () => {
             disabled:bg-blue-400 text-white font-semibold
             py-3 rounded-lg transition"
           >
-            {loading ? "Sending..." : "Send Reset Link"}
+            {loading ? "Resetting..." : "Reset Password"}
           </button>
+
         </form>
 
-        {/* Back to Login */}
+        {/* Login */}
         <div className="text-center mt-6">
-          <NavLink
-            to="/login"
+          <button
+            onClick={() => navigate("/login")}
             className="text-blue-600 font-semibold hover:underline"
           >
             ← Back to Login
-          </NavLink>
+          </button>
         </div>
 
       </div>
@@ -119,4 +170,5 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;
+

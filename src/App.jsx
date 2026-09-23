@@ -1,50 +1,69 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProduct } from "./redux/slices/product";
 
-const App = () => {
-  const dispatch = useDispatch();
+import React, { lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-  const { products, loading, error } = useSelector(
-    (state) => state.product
-  );
+// Lazy load pages
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const ForgotPassword = lazy(() => import("./pages/ForgetPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
-  useEffect(() => {
-    dispatch(fetchProduct());
-  }, [dispatch]);
-
-  if (loading) {
-    return <h2>Loading...</h2>;
-  }
-
-  if (error) {
-    return <h2>{error}</h2>;
-  }
-
+const Loading = () => {
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Products</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="text-center">
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
 
-      {products.map((product) => (
-        <div
-          key={product.id}
-          style={{
-            border: "1px solid #ddd",
-            marginBottom: "15px",
-            padding: "10px",
-          }}
-        >
-          <img
-            src={product.thumbnail}
-            alt={product.title}
-            width="150"
-          />
-          <h3>{product.title}</h3>
-          <p>${product.price}</p>
-        </div>
-      ))}
+        <p className="mt-4 text-gray-600">
+          Loading...
+        </p>
+      </div>
     </div>
   );
 };
 
+const App = () => {
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+
+          {/* Register */}
+          <Route
+            path="/register"
+            element={<Register />}
+          />
+
+          {/* Login */}
+          <Route
+            path="/login"
+            element={<Login />}
+          />
+
+          {/* Forgot Password */}
+          <Route
+            path="/forgot-password"
+            element={<ForgotPassword />}
+          />
+
+          {/* Reset Password */}
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPassword />}
+          />
+
+          {/* Default */}
+          <Route
+            path="*"
+            element={<Login />}
+          />
+
+        </Routes>
+      </Suspense>
+    </BrowserRouter>
+  );
+};
+
 export default App;
+
+
