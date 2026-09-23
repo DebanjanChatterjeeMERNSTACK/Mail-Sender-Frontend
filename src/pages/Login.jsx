@@ -51,14 +51,12 @@ const Login = () => {
 
       toast.success(data.message || "Login successful");
 
-      console.log("Login response:", data);
-      
       setFormData({
         email:"",
         password:""
       })
 
-      navigate("/home")
+      navigate("/mailtemplete")
 
     } catch (error) {
       console.log(error);
