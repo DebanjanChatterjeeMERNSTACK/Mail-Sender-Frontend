@@ -515,7 +515,7 @@ const MailTemplete = () => {
                 <input
                   type="file"
                   onChange={handleFileChange}
-                  accept=".pdf"
+                  accept="application/pdf"
                   required={!editingTemplate}
                   className="w-full min-w-0 rounded-lg border border-gray-300 p-2 text-sm"
                 />
