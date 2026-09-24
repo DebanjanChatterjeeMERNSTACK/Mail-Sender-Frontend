@@ -14,6 +14,19 @@ import {
   Send,
   LoaderCircle,
 } from "lucide-react";
+import {
+  Editor,
+  EditorProvider,
+  Toolbar,
+  BtnBold,
+  BtnItalic,
+  BtnUnderline,
+  BtnStrikeThrough,
+  BtnNumberedList,
+  BtnBulletList,
+  BtnLink,
+  BtnClearFormatting,
+} from "react-simple-wysiwyg";
 
 const emptyForm = { subject: "", bodyMail: "", file: null };
 
@@ -310,10 +323,12 @@ const MailTemplete = () => {
                             </h3>
 
                             {/* Body */}
-                            <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-slate-500">
-                              {template.bodyMail}
-                            </p>
-
+                            <p
+                              className="mt-2 break-words text-sm leading-6 text-slate-500"
+                              dangerouslySetInnerHTML={{
+                                __html: template.bodyMail,
+                              }}
+                            />
                             {/* Attachment */}
                             {template.cvLink && (
                               <a
@@ -498,15 +513,31 @@ const MailTemplete = () => {
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Mail Body
                 </label>
-                <textarea
-                  name="bodyMail"
-                  value={formData.bodyMail}
-                  onChange={handleChange}
-                  placeholder="Write your email..."
-                  rows="7"
-                  required
-                  className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
-                />
+
+                <div className="overflow-hidden rounded-lg border border-gray-300">
+                  <EditorProvider>
+                    <Editor
+                      value={formData.bodyMail}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          bodyMail: e.target.value,
+                        }))
+                      }
+                    >
+                      <Toolbar>
+                        <BtnBold />
+                        <BtnItalic />
+                        <BtnUnderline />
+                        <BtnStrikeThrough />
+                        <BtnNumberedList />
+                        <BtnBulletList />
+                        <BtnLink />
+                        <BtnClearFormatting />
+                      </Toolbar>
+                    </Editor>
+                  </EditorProvider>
+                </div>
               </div>
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700">
