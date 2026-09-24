@@ -35,7 +35,7 @@ const App = () => {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/mailtemplete" element={<MailTemplete />} />
+            <Route path="/" element={<MailTemplete />} />
           </Route>
 
           <Route path="*" element={<Login />} />

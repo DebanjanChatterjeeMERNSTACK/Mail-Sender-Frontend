@@ -56,7 +56,7 @@ const Login = () => {
         password:""
       })
 
-      navigate("/mailtemplete")
+      navigate("/")
 
     } catch (error) {
       console.log(error);
